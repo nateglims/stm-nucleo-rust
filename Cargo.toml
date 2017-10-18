@@ -1,0 +1,36 @@
+[package]
+authors = ["Nathan Glimsdale nglimsdale@gmail.com"]
+categories = [
+    "embedded",
+    "no-std",
+]
+description = "A sample project using the cortex-m-quickstart as a base point."
+keywords = [
+    "arm",
+    "cortex-m",
+    "template",
+]
+license = "MIT OR Apache-2.0"
+name = "nucleoproj"
+repository = ""
+version = "0.1.0"
+
+[dependencies]
+cast = { version = "0.2.2", default-features = false }
+
+[dependencies.cortex-m]
+version = "0.3.0"
+
+[dependencies.cortex-m-rt]
+features = ["abort-on-panic"]
+version = "0.3.3"
+
+[dependencies.cortex-m-semihosting]
+version = "0.2.0"
+
+[dependencies.stm32f302x]
+path = "../stm32f302x"
+
+[profile.release]
+debug = true
+lto = true
