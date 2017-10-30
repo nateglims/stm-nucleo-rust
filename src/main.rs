@@ -2,12 +2,15 @@
 #![no_std]
 
 extern crate cast;
+#[macro_use]
 extern crate cortex_m;
 extern crate cortex_m_rt;
 extern crate stm32f302x;
 
+
 use cortex_m::asm;
-use stm32f302x::{GPIOA, RCC};
+use cortex_m::itm::write_str;
+use stm32f302x::{GPIOA, RCC, ITM};
 
 #[inline(never)]
 fn main() {
@@ -15,6 +18,7 @@ fn main() {
         |cs| {
             let gpioa = GPIOA.borrow(cs);
             let rcc = RCC.borrow(cs);
+            let itm = ITM.borrow(cs);
 
             // Setup GPIO PA5
             rcc.ahbenr.modify(|_, w| w.iopaen().bit(true));
@@ -30,6 +34,7 @@ fn main() {
                 while counter > 0 {
                     counter -= 1;
                 }
+                iprintln!(&itm.stim[0], "Test string.");
             }
         });
 }
