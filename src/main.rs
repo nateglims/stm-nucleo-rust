@@ -9,32 +9,30 @@ extern crate stm32f302x;
 
 
 use cortex_m::asm;
-use cortex_m::itm::write_str;
-use stm32f302x::{GPIOA, RCC, ITM};
+use core::u32;
 
 #[inline(never)]
 fn main() {
     cortex_m::interrupt::free(
         |cs| {
-            let gpioa = GPIOA.borrow(cs);
-            let rcc = RCC.borrow(cs);
-            let itm = ITM.borrow(cs);
+            let mut peripherals = stm32f302x::Peripherals::take().unwrap();
+            let mut core_peripherals = cortex_m::peripheral::Peripherals::take().unwrap();
 
             // Setup GPIO PA5
-            rcc.ahbenr.modify(|_, w| w.iopaen().bit(true));
-            gpioa.moder.modify(|_, w| unsafe { w.moder5().bits(0b01) });
+            peripherals.RCC.ahbenr.modify(|_, w| w.iopaen().bit(true));
+            peripherals.GPIOA.moder.modify(|_, w| unsafe { w.moder5().bits(0b01) });
 
             let mut counter = 0;
             loop {
-                gpioa.bsrr.write(|w| w.bs5().set_bit());
-                while counter < 363636 {
+                peripherals.GPIOA.bsrr.write(|w| w.bs5().set_bit());
+                while counter < 900000 {
                     counter += 1;
                 }
-                gpioa.bsrr.write(|w| w.br5().set_bit());
+                peripherals.GPIOA.bsrr.write(|w| w.br5().set_bit());
                 while counter > 0 {
                     counter -= 1;
                 }
-                iprintln!(&itm.stim[0], "Test string.");
+                //iprintln!(&core_peripherals.ITM.stim[0], "Test string.");
             }
         });
 }
